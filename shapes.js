@@ -11,17 +11,15 @@ class Cone {
 
         this.buffer = null;
         this.vertices = null;
+
+        this.generateVeritces();
+        this.initBuffers();
     }
     
     generateVeritces() {
-
-    }
-    render() {
         var rgba = this.color;
-        gl.uniform4f(u_FragColor, rgba[0], rgba[1], rgba[2], rgba[3]);
 
-        gl.uniformMatrix4fv(u_ModelMatrix, false, this.matrix.elements);
-
+        var v = [];
         var d = this.size/200.0;
 
         let angleStep = 360 / this.segments;
@@ -47,10 +45,44 @@ class Cone {
             }
 
             if(this.shading) { gl.uniform4f(u_FragColor, rgba[0]*0.5, rgba[1]*0.5, rgba[2]*0.5, rgba[3]); }
-            drawTriangle3D([center[0], center[1], center[2], pt1[0], pt1[1], pt1[2], pt2[0], pt2[1], pt2[2]]);
+            v.push(center[0], center[1], center[2], pt1[0], pt1[1], pt1[2], pt2[0], pt2[1], pt2[2]);
             if(this.shading) { gl.uniform4f(u_FragColor, rgba[0]*shade, rgba[1]*shade, rgba[2]*shade, rgba[3]); }
-            drawTriangle3D([apex[0], apex[1], apex[2], pt1[0], pt1[1], pt1[2], pt2[0], pt2[1], pt2[2]]);
+            v.push(apex[0], apex[1], apex[2], pt1[0], pt1[1], pt1[2], pt2[0], pt2[1], pt2[2]);
         }
+        this.vertices = new Float32Array(v);
+    }
+
+    initBuffers() {
+        if (this.buffer === null) {
+            this.buffer = gl.createBuffer();
+            if (!this.buffer) {
+                console.log('Failed to create the buffer object');
+                return -1;
+            }
+
+            gl.bindBuffer(gl.ARRAY_BUFFER, this.buffer);
+            gl.bufferData(gl.ARRAY_BUFFER, this.vertices, gl.STATIC_DRAW);
+        }
+    }
+
+    render() {
+        var rgba = this.color;
+        gl.uniform4f(u_FragColor, rgba[0], rgba[1], rgba[2], rgba[3]);
+
+        gl.uniformMatrix4fv(u_ModelMatrix, false, this.matrix.elements);
+
+        gl.bindBuffer(gl.ARRAY_BUFFER, this.buffer);
+
+        const a_Position = gl.getAttribLocation(gl.program, 'a_Position');
+        if (a_Position < 0) {
+            console.log('Failed to get the storage location of a_Position');
+            return;
+        }
+
+        gl.vertexAttribPointer(a_Position, 3, gl.FLOAT, false, 0, 0);
+        gl.enableVertexAttribArray(a_Position);
+
+        gl.drawArrays(gl.TRIANGLES, 0, this.vertices.length / 3);      
     }
 }
 
@@ -61,16 +93,17 @@ class Disk {
         this.color = [1, 1, 1, 1];
         this.segments = 36;
         this.matrix = new Matrix4();
+
+        this.buffer = null;
+        this.vertices = null;
+
+        this.generateVertices();
+        this.initBuffers();
     }
-    
-    render() {
-        var rgba = this.color;
-        gl.uniform4f(u_FragColor, rgba[0], rgba[1], rgba[2], rgba[3]);
 
-        gl.uniformMatrix4fv(u_ModelMatrix, false, this.matrix.elements);
-
+    generateVertices() {
         var d = this.size/200.0;
-
+        let v = [];
         let angleStep = 360 / this.segments;
         let center = [this.position[0], this.position[1], this.position[2]];
 
@@ -84,103 +117,43 @@ class Disk {
             var pt1 = [center[0] + vec1[0], center[1] + vec1[1], center[2]];
             var pt2 = [center[0] + vec2[0], center[1] + vec2[1], center[2]];
 
-            drawTriangle3D([center[0], center[1], center[2], pt1[0], pt1[1], pt1[2], pt2[0], pt2[1], pt2[2]]);
-        }
-    }
-}
-
-class Crescent {
-    constructor(outerRadius, innerRadius, offset, segments = 36) {
-        this.outerRadius = outerRadius;
-        this.innerRadius = innerRadius;
-        this.offset = offset;
-        this.segments = segments;
-        this.position = [0.0, 0.0, 0.0];
-        this.color = [1, 1, 1, 1];
-        this.matrix = new Matrix4();
-
-        this.vertexBuffer = null;
-        this.vertices = null;
-
-        this.generateVertices();
-        this.initBuffers();
-    }
-
-    generateVertices() {
-        let vertices = [];
-        let angleStep = 360 / this.segments;
-
-        // Generate vertices for the crescent
-
-
-        for (let angle = 0; angle < 360; angle += angleStep) {
-            let angle1 = angle;
-            let angle2 = angle + angleStep;
-
-            let vec1 = [
-                Math.cos((angle1 * Math.PI) / 180) * this.outerRadius / 200.0,
-                Math.sin((angle1 * Math.PI) / 180) * this.outerRadius / 200.0,
-            ];
-            let vec2 = [
-                Math.cos((angle2 * Math.PI) / 180) * this.outerRadius / 200.0,
-                Math.sin((angle2 * Math.PI) / 180) * this.outerRadius / 200.0,
-            ];
-
-            let pt1 = [this.position[0] + vec1[0], this.position[1] + vec1[1]];
-            let pt2 = [this.position[0] + vec2[0], this.position[1] + vec2[1]];
-
-            let offsetVec1 = [
-                Math.cos((angle1 * Math.PI) / 180) * (this.outerRadius - this.offset) / 200.0,
-                Math.sin((angle1 * Math.PI) / 180) * (this.outerRadius - this.offset) / 200.0,
-            ];
-            let offsetVec2 = [
-                Math.cos((angle2 * Math.PI) / 180) * (this.outerRadius - this.offset) / 200.0,
-                Math.sin((angle2 * Math.PI) / 180) * (this.outerRadius - this.offset) / 200.0,
-            ];
-
-            let offsetPt1 = [this.position[0] + offsetVec1[0], this.position[1] + offsetVec1[1]];
-            let offsetPt2 = [this.position[0] + offsetVec2[0], this.position[1] + offsetVec2[1]];
-
-            vertices.push(
-                this.position[0], this.position[1],
-                pt1[0], pt1[1],
-                pt2[0], pt2[1],
-                offsetPt1[0], offsetPt1[1],
-                offsetPt2[0], offsetPt2[1]
-            );
+            v.push(center[0], center[1], center[2], pt1[0], pt1[1], pt1[2], pt2[0], pt2[1], pt2[2]);
         }
 
-        this.vertices = new Float32Array(vertices);
+        this.vertices = new Float32Array(v);
     }
 
     initBuffers() {
-        this.vertexBuffer = gl.createBuffer();
-        if (!this.vertexBuffer) {
-            console.log('Failed to create the buffer object');
-            return -1;
+        if (this.buffer === null) {
+            this.buffer = gl.createBuffer();
+            if (!this.buffer) {
+                console.log('Failed to create the buffer object');
+                return -1;
+            }
+
+            gl.bindBuffer(gl.ARRAY_BUFFER, this.buffer);
+            gl.bufferData(gl.ARRAY_BUFFER, this.vertices, gl.STATIC_DRAW);
         }
-
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
-        gl.bufferData(gl.ARRAY_BUFFER, this.vertices, gl.STATIC_DRAW);
     }
-
+    
     render() {
         var rgba = this.color;
         gl.uniform4f(u_FragColor, rgba[0], rgba[1], rgba[2], rgba[3]);
 
         gl.uniformMatrix4fv(u_ModelMatrix, false, this.matrix.elements);
 
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
+        gl.bindBuffer(gl.ARRAY_BUFFER, this.buffer);
 
         const a_Position = gl.getAttribLocation(gl.program, 'a_Position');
         if (a_Position < 0) {
             console.log('Failed to get the storage location of a_Position');
             return;
         }
-        gl.vertexAttribPointer(a_Position, 2, gl.FLOAT, false, 0, 0);
+
+        gl.vertexAttribPointer(a_Position, 3, gl.FLOAT, false, 0, 0);
         gl.enableVertexAttribArray(a_Position);
 
-        gl.drawArrays(gl.TRIANGLES, 0, this.vertices.length / 2);
+        gl.drawArrays(gl.TRIANGLES, 0, this.vertices.length / 3);
     }
 }
 
@@ -193,7 +166,7 @@ class SemiDisk {
         this.color = [1, 1, 1, 1];
         this.matrix = new Matrix4();
 
-        this.vertexBuffer = null;
+        this.buffer = null;
         this.vertices = null;
 
         this.generateVertices();
@@ -231,14 +204,16 @@ class SemiDisk {
     }
 
     initBuffers() {
-        this.vertexBuffer = gl.createBuffer();
-        if (!this.vertexBuffer) {
-            console.log('Failed to create the buffer object');
-            return -1;
-        }
+        if (this.buffer === null) {
+            this.buffer = gl.createBuffer();
+            if (!this.buffer) {
+                console.log('Failed to create the buffer object');
+                return -1;
+            }
 
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
-        gl.bufferData(gl.ARRAY_BUFFER, this.vertices, gl.STATIC_DRAW);
+            gl.bindBuffer(gl.ARRAY_BUFFER, this.buffer);
+            gl.bufferData(gl.ARRAY_BUFFER, this.vertices, gl.STATIC_DRAW);
+        }
     }
     
     render() {
@@ -247,7 +222,7 @@ class SemiDisk {
 
         gl.uniformMatrix4fv(u_ModelMatrix, false, this.matrix.elements);
 
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
+        gl.bindBuffer(gl.ARRAY_BUFFER, this.buffer);
 
         const a_Position = gl.getAttribLocation(gl.program, 'a_Position');
         if (a_Position < 0) {
@@ -277,13 +252,17 @@ class Cylinder {
         this.shading = shading;
         this.segments = segments;
         this.matrix = new Matrix4();
+
+        this.buffer = null;
+        this.vertices = null;
+
+        this.generateVertices();
+        this.initBuffers();
     }
 
-    render() {
+    generateVertices() {
+        let v = [];
         var rgba = this.color;
-        
-        gl.uniformMatrix4fv(u_ModelMatrix, false, this.matrix.elements);
-
         var steps = this.height / (this.facets - 1);
         var db = this.bottom/200.0;
         var dt = this.top/200.0;
@@ -304,15 +283,9 @@ class Cylinder {
             var pt1 = [-(center[0] + vec1[1]), center[1], -(center[2] + vec1[0])];
             var pt2 = [-(center[0] + vec2[1]), center[1], -(center[2] + vec2[0])];
 
-            drawTriangle3D([apex[0], apex[1], apex[2], pt1[0] * dt, pt1[1] + this.height, pt1[2] * dt, pt2[0] * dt, pt2[1] + this.height, pt2[2] * dt]);
-            if(this.shading) { gl.uniform4f(u_FragColor, rgba[0] * 0.6, rgba[1] * 0.6, rgba[2] * 0.6, rgba[3]); } 
-            drawTriangle3D([center[0], center[1], center[2], pt1[0] * db, pt1[1], pt1[2] * db, pt2[0] * db, pt2[1], pt2[2] * db]);
+            v.push(apex[0], apex[1], apex[2], pt1[0] * dt, pt1[1] + this.height, pt1[2] * dt, pt2[0] * dt, pt2[1] + this.height, pt2[2] * dt);
+            v.push(center[0], center[1], center[2], pt1[0] * db, pt1[1], pt1[2] * db, pt2[0] * db, pt2[1], pt2[2] * db);
 
-            // Sides of the cylinder
-            
-            //var rad = this.facet_widths[1] / 200.0;
-            //drawTriangle3D([center[0], center[1], center[2] + steps, pt1[0] * rad, pt1[1] * rad, pt1[2] + steps, pt2[0] * rad, pt2[1] * rad, pt2[2] + steps]);
-            //drawTriangle3D(center[0], center[1], center[2] + steps, pt1[0] * rad, pt1[1] * rad, pt1[2] + steps, pt2[0] * rad, pt2[1] * rad, pt2[2] + steps);
             if(this.shading) {
                 shade = 1.65 - (Math.sin((angle1 * Math.PI / 360 )));
             }
@@ -322,27 +295,54 @@ class Cylinder {
 
             if(this.shading) { gl.uniform4f(u_FragColor, rgba[0]*shade, rgba[1]*shade, rgba[2]*shade, rgba[3]); }
                      
-
             if(this.facets > 2) {
                 for(var i = 1; i <= this.facets - 2; i++) {
                     var rad = this.facet_widths[i] / 200.0;
                     
                     //drawTriangle3D([center[0], center[1] + steps * i, center[2], pt1[0] * rad, pt1[1] + steps * i, pt1[2] * rad, pt2[0] * rad, pt2[1] + steps * i, pt2[2] * rad]);
 
-                    drawTriangle3D([prev_pt1[0], prev_pt1[1], prev_pt1[2], pt1[0] * rad, pt1[1] + steps * i, pt1[2] * rad, pt2[0] * rad, pt2[1] + steps * i, pt2[2] * rad]);
-                    drawTriangle3D([prev_pt1[0], prev_pt1[1], prev_pt1[2], prev_pt2[0], prev_pt2[1], prev_pt2[2], pt2[0] * rad, pt2[1] + steps * i, pt2[2] * rad]);
+                    v.push(prev_pt1[0], prev_pt1[1], prev_pt1[2], pt1[0] * rad, pt1[1] + steps * i, pt1[2] * rad, pt2[0] * rad, pt2[1] + steps * i, pt2[2] * rad);
+                    v.push(prev_pt1[0], prev_pt1[1], prev_pt1[2], prev_pt2[0], prev_pt2[1], prev_pt2[2], pt2[0] * rad, pt2[1] + steps * i, pt2[2] * rad);
                     prev_pt1 = [pt1[0] * rad, pt1[1] + steps * i, pt1[2] * rad];
                     prev_pt2 = [pt2[0] * rad, pt2[1] + steps * i, pt2[2] * rad];
-                    
-
-                    //drawTriangle3D(center[0], center[1], center[2] + steps, pt1[0] * rad, pt1[1] * rad, pt1[2] + steps, pt2[0] * rad, pt2[1] * rad, pt2[2] + steps);
                 }
             }
-                drawTriangle3D([prev_pt1[0], prev_pt1[1], prev_pt1[2], pt1[0] * dt, pt1[1] + this.height, pt1[2] * dt, pt2[0] * dt, pt2[1] + this.height, pt2[2] * dt]);
-                drawTriangle3D([prev_pt1[0], prev_pt1[1], prev_pt1[2], prev_pt2[0], prev_pt2[1], prev_pt2[2], pt2[0] * dt, pt2[1] + this.height, pt2[2] * dt]);
-           
-            
+            v.push(prev_pt1[0], prev_pt1[1], prev_pt1[2], pt1[0] * dt, pt1[1] + this.height, pt1[2] * dt, pt2[0] * dt, pt2[1] + this.height, pt2[2] * dt);
+            v.push(prev_pt1[0], prev_pt1[1], prev_pt1[2], prev_pt2[0], prev_pt2[1], prev_pt2[2], pt2[0] * dt, pt2[1] + this.height, pt2[2] * dt);
         }
+        this.vertices = new Float32Array(v);
+    }
+
+    initBuffers() {
+        if (this.buffer === null) {
+            this.buffer = gl.createBuffer();
+            if (!this.buffer) {
+                console.log('Failed to create the buffer object');
+                return -1;
+            }
+
+            gl.bindBuffer(gl.ARRAY_BUFFER, this.buffer);
+            gl.bufferData(gl.ARRAY_BUFFER, this.vertices, gl.STATIC_DRAW);
+        }
+    }
+
+    render() {
+        var rgba = this.color;
+        gl.uniform4f(u_FragColor, rgba[0], rgba[1], rgba[2], rgba[3]);
+
+        gl.uniformMatrix4fv(u_ModelMatrix, false, this.matrix.elements);
+
+        gl.bindBuffer(gl.ARRAY_BUFFER, this.buffer);
+
+        const a_Position = gl.getAttribLocation(gl.program, 'a_Position');
+        if (a_Position < 0) {
+            console.log('Failed to get the storage location of a_Position');
+            return;
+        }
+        gl.vertexAttribPointer(a_Position, 3, gl.FLOAT, false, 0, 0);
+        gl.enableVertexAttribArray(a_Position);
+
+        gl.drawArrays(gl.TRIANGLES, 0, this.vertices.length / 3);
     }
 
 
@@ -402,7 +402,7 @@ class Triangle3d {
         this.color = [1, 1, 1, 1];
         this.matrix = new Matrix4();
 
-        this.vertexBuffer = null;
+        this.buffer = null;
         this.vertices = null;
 
         this.generateVertices();
@@ -424,14 +424,16 @@ class Triangle3d {
     }
 
     initBuffers() {
-        this.vertexBuffer = gl.createBuffer();
-        if (!this.vertexBuffer) {
-            console.log('Failed to create the buffer object');
-            return -1;
-        }
+        if (this.buffer === null) {
+            this.buffer = gl.createBuffer();
+            if (!this.buffer) {
+                console.log('Failed to create the buffer object');
+                return -1;
+            }
 
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
-        gl.bufferData(gl.ARRAY_BUFFER, this.vertices, gl.STATIC_DRAW);
+            gl.bindBuffer(gl.ARRAY_BUFFER, this.buffer);
+            gl.bufferData(gl.ARRAY_BUFFER, this.vertices, gl.STATIC_DRAW);
+        }
     }
 
     render() {
@@ -442,7 +444,7 @@ class Triangle3d {
 
         gl.uniformMatrix4fv(u_ModelMatrix, false, this.matrix.elements);
 
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
+        gl.bindBuffer(gl.ARRAY_BUFFER, this.buffer);
 
         const a_Position = gl.getAttribLocation(gl.program, 'a_Position');
         if (a_Position < 0) {
@@ -464,7 +466,7 @@ class Square3d {
         this.color = [1, 1, 1, 1];
         this.matrix = new Matrix4();
 
-        this.vertexBuffer = null;
+        this.buffer = null;
         this.vertices = null;
 
         this.generateVertices();
@@ -488,14 +490,16 @@ class Square3d {
     }
 
     initBuffers() {
-        this.vertexBuffer = gl.createBuffer();
-        if (!this.vertexBuffer) {
-            console.log('Failed to create the buffer object');
-            return -1;
-        }
+        if (this.buffer === null) {
+            this.buffer = gl.createBuffer();
+            if (!this.buffer) {
+                console.log('Failed to create the buffer object');
+                return -1;
+            }
 
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
-        gl.bufferData(gl.ARRAY_BUFFER, this.vertices, gl.STATIC_DRAW);
+            gl.bindBuffer(gl.ARRAY_BUFFER, this.buffer);
+            gl.bufferData(gl.ARRAY_BUFFER, this.vertices, gl.STATIC_DRAW);
+        }
     }
 
     render() {
@@ -506,7 +510,7 @@ class Square3d {
 
         gl.uniformMatrix4fv(u_ModelMatrix, false, this.matrix.elements);
 
-        gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexBuffer);
+        gl.bindBuffer(gl.ARRAY_BUFFER, this.buffer);
 
         const a_Position = gl.getAttribLocation(gl.program, 'a_Position');
         if (a_Position < 0) {
@@ -517,77 +521,5 @@ class Square3d {
         gl.enableVertexAttribArray(a_Position);
 
         gl.drawArrays(gl.TRIANGLE_FAN, 0, this.vertices.length / 3);
-    }
-}
-
-class Tentacle {
-
-}
-
-class Torus {
-    constructor(radius, tube_radius, segments=36, shading=true) {
-        this.radius = radius;
-        this.tube_radius = tube_radius;
-        this.segments = segments;
-        this.shading = shading;
-        this.position = [0.0, 0.0, 0.0];
-        this.color = [1, 1, 1, 1];
-        this.matrix = new Matrix4();
-    }
-
-    render() {
-        var rgba = this.color;
-        gl.uniform4f(u_FragColor, rgba[0], rgba[1], rgba[2], rgba[3]);
-
-        gl.uniformMatrix4fv(u_ModelMatrix, false, this.matrix.elements);
-
-        var d = this.radius/200.0;
-        var dt = this.tube_radius/200.0;
-
-        let angleStep = 360 / this.segments;
-        let center = [this.position[0], this.position[1], this.position[2]];
-        let tube_center = [this.position[0] + this.radius, this.position[1], this.position[2]];
-
-        for(var angle = 0; angle < 360; angle=angle+angleStep) {
-            var angle1 = angle;
-            var angle2 = angle + angleStep;
-            
-            for(var angle_tube = 0; angle_tube < 360; angle_tube=angle_tube+angleStep) {
-                var angle1_tube = angle_tube;
-                var angle2_tube = angle_tube + angleStep;
-
-                var vec1 = [Math.cos(angle1 * Math.PI/180) * d, Math.sin(angle1 * Math.PI/180) * d];
-                var vec2 = [Math.cos(angle2 * Math.PI/180) * d, Math.sin(angle2 * Math.PI/180) * d];
-
-                var vec1_tube = [Math.cos(angle1_tube * Math.PI/180) * dt, Math.sin(angle1_tube * Math.PI/180) * dt];
-                var vec2_tube = [Math.cos(angle2_tube * Math.PI/180) * dt, Math.sin(angle2_tube * Math.PI/180) * dt];
-
-                var pt1 = [center[0] + vec1[0], center[1] + vec1[1], center[2]];
-                var pt2 = [center[0] + vec2[0], center[1] + vec2[1], center[2]];
-
-                var pt1_tube = [tube_center[0] + vec1_tube[0], tube_center[1] + vec1_tube[1], tube_center[2]];
-                var pt2_tube = [tube_center[0] + vec2_tube[0], tube_center[1] + vec2_tube[1], tube_center[2]];
-
-                drawTriangle3D([pt1[0], pt1[1], pt1[2], pt1_tube[0], pt1_tube[1], pt1_tube[2], pt2_tube[0], pt2_tube[1], pt2_tube[2]]);
-                drawTriangle3D([pt1[0], pt1[1], pt1[2], pt2_tube[0], pt2_tube[1], pt2_tube[2], pt2[0], pt2[1], pt2[2]]);
-            }
-        }
-    }
-}
-
-class feather {
-    constructor(segment_angles, segment_lengths, segment_widths, pointy=True) {
-        this.segments = segment_angles.length;
-        this.angles = segment_angles;
-        this.lengths = segment_lengths;
-        this.widths = segment_widths;
-        this.pointy = pointy;
-        this.position = [0.0, 0.0, 0.0];
-        this.color = [1, 1, 1, 1];
-        this.matrix = new Matrix4();
-    }
-
-    render() {
-
     }
 }
