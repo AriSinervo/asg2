@@ -1,0 +1,67 @@
+<html>
+    <head>
+        <title>Assignment 1</title>
+        <script src="asg2.js"></script>
+        <script src="points.js"></script>
+        <script src="triangle.js"></script>
+        <script src="circle.js"></script>
+        <script src="cube.js"></script>
+        <script src="shapes.js"></script>
+        <script src="lib/cuon-utils.js"></script>
+        <script src="lib/cuon-matrix.js"></script>
+        <script src="lib/webgl-utils.js"></script>
+        <script src="lib/webgl-debug.js"></script>
+        
+    </head>
+
+    <body onload="main()">
+        <canvas id="webgl" width="400" height="400">
+            Please use a browser that supports "canvas"
+        </canvas>
+        <p>Click and drag to move the camera around or shift click to change her animations!</p>
+        <p>
+        <p id="numdot"> 
+        </p>
+
+        Camera Angle: <input type="range" min="-360" max="360" value="0" class="slider" id="angleSlide">
+        <input type="range" min="-360" max="360" value="0" class="slider" id="angleSlide2">
+        <input type="range" min="-360" max="360" value="0" class="slider" id="angleSlide3">
+
+        Camera Position: <input type="range" min="0.3" max="5" value="1" step="0.01" class="slider" id="posSlide">
+        <p><button type="button" id="reset">Reset Camera Position</button>
+            <button type="button" id="PerspTog">Toggle Perspective</button>
+            <button type="button" id="groundTog"> Toggle Background</button>
+            <button type="button" id="flowTog"> Toggle Details</button>
+            <button type="button" id="charTog"> Toggle Character</button>
+            <button type="button" id="toggle">Toggle Animation</button>
+            <button type="button" id="shading">Toggle Shading</button></p>
+        
+        <p>
+        Right arm angle x: <input type="range" min="0" max="360" value="0" class="slider" id="yellowSlide">
+        Right arm angle y: <input type="range" min="0" max="360" value="0" class="slider" id="yellowSlide2">
+        Right arm angle z: <input type="range" min="0" max="360" value="0" class="slider" id="yellowSlide3">
+        <p>
+        Right leg angle x: <input type="range" min="0" max="360" value="0" class="slider" id="greenSlide">
+        Right leg angle y: <input type="range" min="0" max="360" value="0" class="slider" id="greenSlide2">
+        Right leg angle z: <input type="range" min="0" max="360" value="0" class="slider" id="greenSlide3">
+        <p>
+        Left arm angle x: <input type="range" min="0" max="360" value="0" class="slider" id="magentaSlide">
+        Left arm angle y: <input type="range" min="0" max="360" value="0" class="slider" id="magentaSlide2">
+        Left arm angle z: <input type="range" min="0" max="360" value="0" class="slider" id="magentaSlide3">
+        <p>
+        Left leg angle x: <input type="range" min="0" max="360" value="0" class="slider" id="cyanSlide">
+        Left leg angle y: <input type="range" min="0" max="360" value="0" class="slider" id="cyanSlide2">
+        Left leg angle z: <input type="range" min="0" max="360" value="0" class="slider" id="cyanSlide3">
+        </p>
+        <p>
+        
+        <!-- Brush Size: <input type="range" min="5" max="100" value="10" class="slider" id="sizeSlide">
+        (circles) Segment Count: <input type="range" min="3" max="360" value="10" class="slider" id="segmentSlide">
+        </p> -->
+        Here is the reference I used for the model, it is a character I drew inspired by Aztec/Maya artwork. While I've always pictured this character in stark black and white monochrome robes, this would only look good in a detailed model so I decided to add different colors to the blocky version. Since the character's outfit was originally inspired by the Aztec rain god, Tlaloc, I drew inspiration from his palette when coloring my character. 
+        <p>
+        <img src="Mi_Ref.jpg" alt="Pumpkin Image" width="471" height="587">   
+
+    </body>
+
+</html>
