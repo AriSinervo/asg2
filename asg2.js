@@ -1,5 +1,3 @@
-// Code by Ari Sinervo
-
 var VSHADER_SOURCE =`
   attribute vec4 a_Position;
   uniform mat4 u_ModelMatrix;
@@ -39,6 +37,7 @@ let cameraZ = 3.5;
 var perspectiveTog = true;
 var groundTog = true;
 var surpDetailTog = true;
+var treesTog = false;
 var charTog = true;
 var shading = false;
 
@@ -622,11 +621,239 @@ function renderGround() {
   grass.matrix.scale(1.0, 1.0, 0.1);
   grass.render();
 
+  var water = new Disk (4000);
+  water.color = [0.0, 0.3, 0.9, 1.0];
+  water.matrix.rotate(270, 1, 0, 0);
+  water.matrix.translate(0.0, 0.0, -0.753);
+  water.matrix.scale(1.0, 1.0, 0.1);
+  water.render();
 
 
   // render flowers ------------------------------
 
   if(surpDetailTog) {
+    var grass2 = new Disk (6000);
+    grass2.color = rgb_grass;
+    grass2.matrix.rotate(270, 1, 0, 0);
+    grass2.matrix.translate(0.0, 0.0, -0.754);
+    grass2.matrix.scale(1.0, 1.0, 0.1);
+    grass2.render();
+
+    var Temple1 = new Cylinder([125, 100], 25, shading, 4);
+    Temple1.color = [0.5, 0.4, 0.4, 1.0];
+    Temple1.matrix.translate(1500.0/200, -0.754, 4500.0/200);
+    Temple1.matrix.scale(5, 5, 5);
+    Temple1.matrix.rotate(-25, 0, 1, 0);
+    Temple1.render();
+
+    var TempleStairs1 = new Cylinder([15, 15], 130, shading, 4);
+    TempleStairs1.color = [0.65, 0.55, 0.55, 1.0];
+    //TempleStairs.matrix.scale(2, 2, 2);
+    TempleStairs1.matrix = new Matrix4(Temple1.matrix);
+    TempleStairs1.matrix.rotate(-45, 0, 1, 0);
+    TempleStairs1.matrix.translate(-0.55, -0.05, 0);
+    TempleStairs1.matrix.rotate(-55, 0, 0, 1);
+    TempleStairs1.matrix.rotate(45, 0, 1, 0);
+    TempleStairs1.render();
+
+    var TempleStairs2 = new Cylinder([15, 15], 130, shading, 4);
+    TempleStairs2.color = [0.65, 0.55, 0.55, 1.0];
+    //TempleStairs.matrix.scale(2, 2, 2);
+    TempleStairs2.matrix = new Matrix4(Temple1.matrix);
+    TempleStairs2.matrix.rotate(90, 0, 1, 0);
+    TempleStairs2.matrix.rotate(-45, 0, 1, 0);
+    TempleStairs2.matrix.translate(-0.55, -0.05, 0);
+    TempleStairs2.matrix.rotate(-55, 0, 0, 1);
+    TempleStairs2.matrix.rotate(45, 0, 1, 0);
+    TempleStairs2.render();
+
+    var TempleStairs3 = new Cylinder([15, 15], 130, shading, 4);
+    TempleStairs3.color = [0.65, 0.55, 0.55, 1.0];
+    //TempleStairs.matrix.scale(2, 2, 2);
+    TempleStairs3.matrix = new Matrix4(Temple1.matrix);
+    TempleStairs3.matrix.rotate(180, 0, 1, 0);
+    TempleStairs3.matrix.rotate(-45, 0, 1, 0);
+    TempleStairs3.matrix.translate(-0.55, -0.05, 0);
+    TempleStairs3.matrix.rotate(-55, 0, 0, 1);
+    TempleStairs3.matrix.rotate(45, 0, 1, 0);
+    TempleStairs3.render();
+
+    var TempleStairs4 = new Cylinder([15, 15], 130, shading, 4);
+    TempleStairs4.color = [0.65, 0.55, 0.55, 1.0];
+    //TempleStairs.matrix.scale(2, 2, 2); 
+    TempleStairs4.matrix = new Matrix4(Temple1.matrix);
+    TempleStairs4.matrix.rotate(-90, 0, 1, 0);
+    TempleStairs4.matrix.rotate(-45, 0, 1, 0);
+    TempleStairs4.matrix.translate(-0.55, -0.05, 0);
+    TempleStairs4.matrix.rotate(-55, 0, 0, 1);
+    TempleStairs4.matrix.rotate(45, 0, 1, 0);
+    TempleStairs4.render();
+
+
+    var Temple2 = new Cylinder([150, 100], 25, shading, 4);
+    Temple2.matrix = Temple1.matrix;
+    Temple2.color = [0.55, 0.45, 0.45, 1.0];
+    Temple2.matrix.translate(0.0, 25/200, 0.0);
+    Temple2.matrix.scale(0.5, 1.0, 0.5);
+    Temple2.render();
+
+    var Temple3 = new Cylinder([125, 50], 25, shading, 4);
+    Temple3.matrix = Temple1.matrix;
+    Temple3.color = [0.6, 0.5, 0.5, 1.0];
+    Temple3.matrix.translate(0.0, 25/200, 0.0);
+    Temple3.matrix.scale(0.5, 1.0, 0.5);
+    Temple3.render();
+
+    var Temple4 = new Cylinder([125, 125], 15, shading, 4);
+    Temple4.matrix = Temple1.matrix;
+    Temple4.color = [0.7, 0.7, 0.7, 1.0];
+    Temple4.matrix.translate(0.0, 20/200, 0.0);
+    Temple4.matrix.scale(0.5, 1.0, 0.5);
+    Temple4.render();
+
+    var templeDoor = new Square3d(10, 50);
+    templeDoor.color = [0.0, 0.0, 0.0, 1.0];
+    templeDoor.matrix = new Matrix4(Temple1.matrix);
+    templeDoor.matrix.rotate(-45, 0, 1, 0);
+    templeDoor.matrix.translate(0.5, 0.03, 0);
+    templeDoor.matrix.rotate(90, 0, 1, 0);
+    templeDoor.render();
+
+    templeDoor.matrix.translate(0, 0, -1);
+    templeDoor.render();
+
+    templeDoor.matrix.rotate(90, 0, 1, 0);
+    templeDoor.matrix.translate(-0.5, 0, 0.5);
+    templeDoor.render();
+
+    templeDoor.matrix.translate(0, 0, -1);
+    templeDoor.render();
+
+    var templeRoof = new Cylinder([135, 100], 10, shading, 4);
+    templeRoof.color = [0.9, 0.4, 0.4, 1.0];
+    templeRoof.matrix = new Matrix4(Temple1.matrix);
+    templeRoof.matrix.translate(0.0, 15/200, 0.0);
+    //templeRoof.matrix.scale(0.5, 1.0, 0.5);
+    templeRoof.render();
+
+    var templeMini1 = new Cylinder([50, 25], 45, shading, 4);
+    templeMini1.color = [0.55, 0.45, 0.45, 1.0];
+    templeMini1.matrix.translate(700.0/200, -0.754, 4500.0/200);
+    templeMini1.matrix.scale(4, 4, 4);
+    templeMini1.matrix.rotate(-35, 0, 1, 0);
+    templeMini1.render();
+
+    var templeMiniRoof1 = new Cone(20, 30, 45, 4);
+    templeMiniRoof1.color = [0.7, 0.4, 0.4, 1.0];
+    templeMiniRoof1.matrix = new Matrix4(templeMini1.matrix);
+    templeMiniRoof1.matrix.translate(0.0, 45/200, 0.0);
+    //templeMiniRoof1.matrix.scale(0.5, 1.0, 0.5);
+    templeMiniRoof1.render();
+
+    var templeMini2 = new Cylinder([50, 25], 45, shading, 4);
+    templeMini2.color = [0.55, 0.45, 0.45, 1.0];
+    templeMini2.matrix.translate(1000.0/200, -0.754, 4900.0/200);
+    templeMini2.matrix.scale(3, 3, 3);
+    templeMini2.matrix.rotate(-30, 0, 1, 0);
+    templeMini2.render();
+
+    var templeMiniRoof2 = new Cone(20, 30, 45, 4);
+    templeMiniRoof2.color = [0.7, 0.4, 0.4, 1.0];
+    templeMiniRoof2.matrix = new Matrix4(templeMini2.matrix);
+    templeMiniRoof2.matrix.translate(0.0, 45/200, 0.0);
+    //templeMiniRoof2.matrix.scale(0.5, 1.0, 0.5);
+    templeMiniRoof2.render();
+
+    var templeMini3 = new Cylinder([50, 25], 45, shading, 4);
+    templeMini3.color = [0.55, 0.45, 0.45, 1.0];
+    templeMini3.matrix.translate(2000.0/200, -0.754, 3950.0/200);
+    templeMini3.matrix.scale(4.3, 4.3, 4.3);
+    templeMini3.matrix.rotate(-15, 0, 1, 0);
+    templeMini3.render();
+
+    var templeMiniRoof3 = new Cone(20, 30, 45, 4);
+    templeMiniRoof3.color = [0.7, 0.4, 0.4, 1.0];
+    templeMiniRoof3.matrix = new Matrix4(templeMini3.matrix);
+    templeMiniRoof3.matrix.translate(0.0, 45/200, 0.0);
+    //templeMiniRoof3.matrix.scale(0.5, 1.0, 0.5);
+    templeMiniRoof3.render();
+
+    var templeMini4 = new Cylinder([50, 25], 45, shading, 4);
+    templeMini4.color = [0.55, 0.45, 0.45, 1.0];
+    templeMini4.matrix.translate(-1700.0/200, -0.754, 4200.0/200);
+    templeMini4.matrix.scale(4.5, 4.5, 4.5);
+    templeMini4.matrix.rotate(15, 0, 1, 0);
+    templeMini4.render();
+
+    var templeMiniRoof4 = new Cone(20, 30, 45, 4);
+    templeMiniRoof4.color = [0.7, 0.4, 0.4, 1.0];
+    templeMiniRoof4.matrix = new Matrix4(templeMini4.matrix);
+    templeMiniRoof4.matrix.translate(0.0, 45/200, 0.0);
+    //templeMiniRoof4.matrix.scale(0.5, 1.0, 0.5);
+    templeMiniRoof4.render();
+
+    Mountain1 = new Cylinder([500, 100], 200, 100, 4);
+    Mountain1.color = [0.0, 0.8, 0.35, 1.0];
+    Mountain1.matrix.translate(-1300.0/200, -0.754, 5800.0/200);
+    Mountain1.matrix.rotate(30, 0, 1, 0);
+    Mountain1.matrix.scale(2, 2, 2);
+    Mountain1.render();
+
+    Mountain2 = new Cylinder([100, 30], 50, 100, 4);
+    Mountain2.color = [0.9, 0.9, 0.9, 1.0];
+    Mountain2.matrix = new Matrix4(Mountain1.matrix);
+    Mountain2.matrix.translate(0, 1, 0);
+    Mountain2.render();
+
+    Mountain3 = new Cylinder([500, 100], 200, 100, 4);
+    Mountain3.color = [0.0, 0.8, 0.35, 1.0];
+    Mountain3.matrix.translate(-2500.0/200, -0.754, 6000.0/200);
+    Mountain3.matrix.rotate(-30, 0, 1, 0);
+    Mountain3.matrix.scale(2.5, 2.6, 2.5);
+    Mountain3.render();
+
+    Mountain4 = new Cylinder([180, 30], 80, 100, 4);
+    Mountain4.color = [0.9, 0.9, 0.9, 1.0];
+    Mountain4.matrix = new Matrix4(Mountain3.matrix);
+    Mountain4.matrix.translate(0, 0.8, 0);
+    Mountain4.render();
+    
+    if(treesTog) {
+      const seed = 2; // You can change the seed value to get different random sequences
+      const seededRandom = new SeededRandom(seed);
+
+      // Define the range for the radius
+      const minRadius = 4000;
+      const maxRadius = 6000;
+      const numTrees = 25; // Number of trees to scatter
+
+      // Loop to create and render trees
+      for (let i = 0; i < numTrees; i++) {
+          // Calculate a random step angle for the current tree
+          const stepAngle = seededRandom.nextInRange(0, 2 * Math.PI);
+
+          // Calculate the angle for the current tree
+          const angle = i * stepAngle;
+
+          // Use a fixed radius within the specified range
+          const radius = seededRandom.nextInRange(minRadius, maxRadius) / 200.0;
+
+          // Calculate the x and z positions based on the angle and radius
+          const x = radius * Math.cos(angle);
+          const z = radius * Math.sin(angle);
+
+          // Create and render the tree
+          const tree = new Cylinder([50, 75, 75, 75, 50], 200, shading, 4); // Assuming you have a Tree class
+          tree.color = [0.0, 0.5, 0.15, 1.0]; // Assuming you have a color defined for the tree
+          tree.matrix.translate(x, -0.75, z);
+          tree.render();
+          //console.log("Tree " + i + " created at position: " + x + ", 0.0, " + z);
+      } 
+    }
+
+
+
+
     var flow1 = new Flower(25, 50, 15, 8);
     flow1.color = [1.0, 1.0, 0.0, 1.0];
     flow1.petal_color = rgb_flower1;
@@ -1738,6 +1965,24 @@ function onMouseMove(ev) {
   }
 }
 
+function getRandomInRange(min, max) {
+  return Math.random() * (max - min) + min;
+}
+
+function SeededRandom(seed) {
+  this.seed = seed;
+}
+
+SeededRandom.prototype.next = function() {
+  // Simple linear congruential generator (LCG)
+  this.seed = (this.seed * 9301 + 49297) % 233280;
+  return this.seed / 233280;
+};
+
+SeededRandom.prototype.nextInRange = function(min, max) {
+  return min + this.next() * (max - min);
+};
+
 function addActionsFromHtmlUI() {
         document.getElementById('angleSlide').addEventListener('mousemove', function() { g_globalAngle = -1 * this.value; renderScene(); });
         document.getElementById('angleSlide2').addEventListener('mousemove', function() { g_globalAngle2 = -1 * this.value; renderScene(); });
@@ -1750,7 +1995,7 @@ function addActionsFromHtmlUI() {
         document.getElementById('groundTog').onclick = function() {if(groundTog){groundTog=false;} else {groundTog=true}; renderScene();};
         document.getElementById('flowTog').onclick = function() {if(surpDetailTog){surpDetailTog=false;} else {surpDetailTog=true}; renderScene();};
         document.getElementById('charTog').onclick = function() {if(charTog){charTog=false;} else {charTog=true}; renderScene();};
-        document.getElementById('shading').onclick = function() {if(shading){shading=false;} else {shading=true}; renderScene();};
+        document.getElementById('treesTog').onclick = function() {if(treesTog){treesTog=false;} else {treesTog=true}; renderScene();};
 
         document.getElementById('yellowSlide').addEventListener('mousemove', function() { leftArmAngleX = this.value; renderScene(); });
         document.getElementById('yellowSlide2').addEventListener('mousemove', function() { leftArmAngleY = this.value; renderScene(); });
