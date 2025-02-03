@@ -31,7 +31,7 @@ let g_globalAngle2 = 0;
 let g_globalAngle3 = 0;
 let g_globalScale = 1;
 let cameraX = 0;
-let cameraY = 0;
+let cameraY = 0.2;
 let cameraZ = 3.5;
 
 var perspectiveTog = true;
@@ -67,6 +67,14 @@ let HeadAngleZ = 0;
 let leftFootAngle = 0;
 let RightFootAngle = 0;
 
+let ManElbowL = 0;
+let ManElbowR = 0;
+
+let ManKneeL = 0;
+let ManKneeR = 0;
+
+let CharHeight = 0;
+
 var g_startTime = performance.now()/1000.0;
 var g_seconds = performance.now()/1000.0-g_startTime;
 var pauseOffset = 0;
@@ -75,6 +83,10 @@ var AnimationTF = true;
 var AnimationMode = 0;
 let isDragging = false;
 
+var leftOffArm = 0;
+var leftOffElbow = 0;
+var leftOffHead = 0;
+
 
 function main() {
     console.log('Welcome to CSE 160');
@@ -82,6 +94,8 @@ function main() {
     setupWebGL();
     connectVariablesToGLSL();
     addActionsFromHtmlUI();
+
+    AnimationMode = Math.floor(Math.random() * 9);
 
     //gl.clearColor(g_canvasColor[0], g_canvasColor[1], g_canvasColor[2], g_canvasColor[3]);
     gl.clearColor(0.2, 0.45, 0.8, 1.0);
@@ -122,9 +136,8 @@ function updateAnimationAngles() {
 
     if(AnimationMode == 1) {
       // Wave
-      console.log(g_seconds);
+      //console.log(g_seconds);
       leftLegAngleY = 20;
-      leftArmAngleX = 10;
       leftLegAngleZ = 7;
       RightLegAngleY = 20;
       RightLegAngleZ = 7;
@@ -180,22 +193,57 @@ function updateAnimationAngles() {
         TorsoAngleZ = 0;
         leftArmAngleZ = 0;
       }
-      if(g_seconds > 5.5 && g_seconds < 10) {
+      if(g_seconds > 5.5 && g_seconds < 9.9) {
         leftArmAngleX = 5*Math.sin(g_seconds);
         leftArmAngleY = Math.abs(15*Math.sin(g_seconds));
         leftArmAngleZ = 2*Math.sin(g_seconds);
       }
       if(g_seconds > 10) {
+        leftArmAngleX = 0;
+        leftArmAngleY = 0;
+        leftArmAngleZ = 0;
+        leftLegAngleX = 0;
+        leftLegAngleY = 0;
+        leftLegAngleZ = 0;
+        RightArmAngleX = 0;
+        RightArmAngleY = 0;
+        RightArmAngleZ = 0;
+        RightLegAngleX = 0;
+        RightLegAngleY = 0;
+        RightLegAngleZ = 0;
+        HeadAngleX = 0;
+        HeadAngleY = 0;
+        HeadAngleZ = 0;
+        TorsoAngleX = 0;
+        TorsoAngleY = 0;
+        TorsoAngleZ = 0;
+        leftFootAngle = 0;
+        RightFootAngle = 0;
+        ManElbowL = 0;
+        ManElbowR = 0;
+        ManKneeL = 0;
+        ManKneeR = 0;
+        CharHeight = 0;
         g_startTime = performance.now()/1000.0;
+        g_seconds = performance.now()/1000.0-g_startTime;
       }
     }
     if(AnimationMode == 2) {
       // Walk cycle
+      TorsoAngleZ = 3*Math.sin(2*g_seconds);
+      TorsoAngleX = -Math.abs(5*Math.sin(g_seconds));
+      HeadAngleZ = 5*Math.sin(g_seconds);
+      HeadAngleX = -Math.abs(5*Math.sin(g_seconds));
+
+
+
       leftArmAngleX = 25*Math.sin(2*g_seconds);
       RightArmAngleX = -25*Math.sin(2*g_seconds);
 
       leftLegAngleX = -25*Math.sin(2*g_seconds);
       RightLegAngleX = 25*Math.sin(2*g_seconds);
+      leftlegAngleZ = 5*Math.sin(2*g_seconds);
+      RightLegAngleZ = -5*Math.sin(2*g_seconds);
 
       leftFootAngle = 25*Math.sin(2*g_seconds);
       RightFootAngle = -25*Math.sin(2*g_seconds);
@@ -203,6 +251,305 @@ function updateAnimationAngles() {
       //RightArmAngleZ = -45*Math.sin(g_seconds);
       //leftLegAngleZ = -45*Math.sin(g_seconds);
       //RightLegAngleZ = 45*Math.sin(g_seconds);
+    }
+    if(AnimationMode == 3) {
+      // Dance
+      leftLegAngleX = 10*Math.sin(2*g_seconds);
+      leftLegAngleY = 20 + 10*Math.sin(2*g_seconds);
+      leftLegAngleZ = 7 - 4*Math.sin(5*g_seconds);
+      RightLegAngleX = -10*Math.sin(3*g_seconds);
+      RightLegAngleY = 20 + 10*Math.sin(2*g_seconds);
+      RightLegAngleZ = 7 + 3*Math.sin(5*g_seconds);
+
+      TorsoAngleY = 15*Math.sin(2*g_seconds);
+      TorsoAngleZ = 3*Math.sin(2*g_seconds);
+      TorsoAngleX = -Math.abs(10*Math.sin(g_seconds));
+      HeadAngleZ = 5*Math.sin(g_seconds);
+      HeadAngleX = -Math.abs(15*Math.sin(5 * g_seconds));
+
+      leftArmAngleX = -Math.abs(20*Math.sin(2*g_seconds));
+      leftArmAngleY = -Math.abs(15*Math.sin(2*g_seconds));
+      leftArmAngleZ = Math.abs(120*Math.sin(2*g_seconds));
+
+      RightArmAngleX = Math.abs(50*Math.sin(2*g_seconds));
+      RightArmAngleY = -Math.abs(90*Math.sin(2*g_seconds));
+      RightArmAngleZ = Math.abs(10*Math.sin(2*g_seconds));
+    }
+
+    if(AnimationMode == 4) {
+      // Bored
+      leftLegAngleX = 20*Math.sin(g_seconds);
+      leftLegAngleY = -5;
+      leftLegAngleZ = -2;
+      RightLegAngleX = -5*Math.sin(g_seconds);
+      RightLegAngleY = -5;
+      RightLegAngleZ = -2;
+
+      HeadAngleX = -Math.abs(10*Math.sin(0.5 * g_seconds));
+      //HeadAngleY = 5*Math.sin(2*g_seconds);
+      //HeadAngleZ = 5*Math.sin(2*g_seconds);
+
+      TorsoAngleX = 5*Math.sin(g_seconds);
+
+      leftArmAngleY = -80;
+      leftArmAngleZ = -110;
+      leftArmAngleX = 70;
+
+      RightArmAngleY = -80;
+      RightArmAngleZ = -110;
+      RightArmAngleX = 70;
+    }
+
+    if(AnimationMode == 5) {
+      // Tapping foot
+      leftArmAngleX = 55 + 5*Math.sin(2*g_seconds);
+      leftArmAngleY = -30;
+      ManElbowL = -80 + 12*Math.sin(2*g_seconds);
+
+      TorsoAngleY = 10;
+      TorsoAngleX = -5 - Math.abs(3*Math.sin(g_seconds));
+
+      HeadAngleX = -Math.abs(5*Math.sin(g_seconds));
+
+      RightArmAngleX = 5*Math.sin(0.5 * g_seconds);
+      RightArmAngleY = Math.abs(5*Math.sin(0.5 * g_seconds));
+      RightArmAngleZ = 5*Math.sin(0.5 * g_seconds);
+
+      leftLegAngleX = -10;
+      leftLegAngleY = 20;
+      leftFootAngle = -30;
+
+      RightLegAngleX = 20
+      RightLegAngleY = 25;
+      RightLegAngleZ = 10;
+
+      ManKneeR = 20 + 2*Math.sin(2*g_seconds);
+      RightFootAngle = -5-Math.abs(30*Math.sin(7*g_seconds));
+
+      CharHeight = -0.05
+
+    }
+
+    if(AnimationMode == 6) { 
+      CharHeight = Math.abs(0.5*Math.sin(5+2*g_seconds));
+      leftArmAngleX = -30 + Math.abs(75*Math.sin(2*g_seconds));
+      RightArmAngleX = -30 + Math.abs(85*Math.sin(2*g_seconds));
+
+      leftLegAngleX = 40*Math.sin(4*g_seconds);
+      //leftLegAngleY = 20 + 10*Math.sin(2*g_seconds);
+      //leftLegAngleZ = 7 - 4*Math.sin(5*g_seconds);
+      RightLegAngleX = 25+50*Math.sin(4*g_seconds);
+      //RightLegAngleY = 20 + 10*Math.sin(2*g_seconds);
+      //RightLegAngleZ = 7 + 3*Math.sin(5*g_seconds);
+
+      TorsoAngleX = -Math.abs(20*Math.sin(2*g_seconds));
+
+      HeadAngleZ = 5*Math.sin(g_seconds);
+    }
+
+    if(AnimationMode == 7) {
+      // Fist Pump
+
+      //console.log(g_seconds);
+      leftLegAngleY = 30;
+      leftLegAngleZ = 14;
+      RightLegAngleY = 20;
+      RightLegAngleZ = 7;
+    
+      if(g_seconds < 0.8) {
+        TorsoAngleY = -20 - Math.abs(10*Math.sin(2*g_seconds));
+        TorsoAngleZ = -Math.abs(5*Math.sin(2*g_seconds));
+        TorsoAngleX = -5-Math.abs(30*Math.sin(2*g_seconds));
+      }
+
+      if(g_seconds > 0.5 && g_seconds < 0.8) {
+        leftArmAngleX = 110*Math.sin(1*g_seconds);
+        ManElbowL = -40*Math.sin(1*g_seconds);
+      }
+      if (g_seconds > 0.8 && g_seconds < 1) {
+        leftArmAngleX = 110*Math.sin(1*g_seconds)-120*Math.sin(1*g_seconds);
+        ManElbowL = -40*Math.sin(1*g_seconds)-140*Math.sin(1*g_seconds);
+      }
+
+      if(g_seconds > 1 && g_seconds < 1.05) {
+        TorsoAngleY = -29;
+        TorsoAngleZ =  -5
+        TorsoAngleX =  -35;
+        leftArmAngleX = -20;
+        ManElbowL = - 140;
+      }
+      if(g_seconds > 1.05 && g_seconds < 1.1) {
+        TorsoAngleY = -28;
+        TorsoAngleZ =  -5;
+        TorsoAngleX =  -32;
+        leftArmAngleX = -15;
+        ManElbowL = - 120;
+
+      }
+      if(g_seconds > 1.1 && g_seconds < 1.15) {
+        TorsoAngleY = -26;
+        TorsoAngleZ =  -4;
+        TorsoAngleX =  -29;
+        leftArmAngleX = -10;
+        ManElbowL = - 70;
+      } 
+      if(g_seconds > 1.15 && g_seconds < 1.2) {
+        TorsoAngleY = -25;
+        TorsoAngleZ =  -3;
+        TorsoAngleX =  -24;
+        leftArmAngleX = -5;
+        ManElbowL = - 20;
+      }
+      if(g_seconds > 1.2 && g_seconds < 1.25) {
+        TorsoAngleY = -23;
+        TorsoAngleZ =  -2;
+        TorsoAngleX =  -15;
+        leftArmAngleX = 0;
+        ManElbowL = - 10;
+      }
+      if(g_seconds > 1.25 && g_seconds < 1.3) {
+        TorsoAngleY = -22;
+        TorsoAngleZ =  1;
+        TorsoAngleX =  -10;
+        ManElbowL = - 5;
+      }
+      if(g_seconds > 1.3 && g_seconds < 1.35) {
+        TorsoAngleY = -21;
+        TorsoAngleZ =  1;
+        TorsoAngleX =  -7;
+        ManElbowL = 0;
+      }
+      if(g_seconds > 1.35 && g_seconds < 1.4) {
+        TorsoAngleY = -20;
+        TorsoAngleZ =  0;
+        TorsoAngleX =  5;
+      }
+
+      leftArmAngleY = Math.abs(15*Math.sin(g_seconds));
+      leftArmAngleZ = 2*Math.sin(g_seconds);
+
+      RightArmAngleX = -5*Math.sin(g_seconds);
+      RightArmAngleY = Math.abs(15*Math.sin(g_seconds));
+      RightArmAngleZ = 2*Math.sin(g_seconds);
+
+      leftLegAngleX = 20;
+      ManKneeL = -20;
+      leftFootAngle = 30;
+
+      if(g_seconds > 1.8 && g_seconds < 2) {
+        leftArmAngleX = 0;
+        leftArmAngleY = 0;
+        leftArmAngleZ = 0;
+        leftLegAngleX = 0;
+        leftLegAngleY = 0;
+        leftLegAngleZ = 0;
+        RightArmAngleX = 0;
+        RightArmAngleY = 0;
+        RightArmAngleZ = 0;
+        RightLegAngleX = 0;
+        RightLegAngleY = 0;
+        RightLegAngleZ = 0;
+        HeadAngleX = 0;
+        HeadAngleY = 0;
+        HeadAngleZ = 0;
+        TorsoAngleX = 0;
+        TorsoAngleY = 0;
+        TorsoAngleZ = 0;
+        leftFootAngle = 0;
+        RightFootAngle = 0;
+        ManElbowL = 0;
+        ManElbowR = 0;
+        ManKneeL = 0;
+        ManKneeR = 0;
+        CharHeight = 0;
+        g_startTime = performance.now()/1000.0;
+        g_seconds = performance.now()/1000.0-g_startTime;
+      }
+
+
+    }
+    if(AnimationMode == 8) {
+      // Face Palm
+      TorsoAngleY = 10;
+      TorsoAngleX = -10;
+      leftLegAngleY = 20;
+      leftLegAngleZ = 7;
+      RightArmAngleX = 30;
+      //RightLegAngleY = 50;
+      RightLegAngleZ = 10;
+      ManKneeR = -5;
+      RightFootAngle = 10;
+
+
+      RightArmAngleX = 10-5*Math.sin(g_seconds);
+      RightArmAngleY = 15+Math.abs(15*Math.sin(g_seconds));
+      RightArmAngleZ = -10+2*Math.sin(g_seconds);
+
+      if(g_seconds < 0.5) {
+        leftArmAngleX = 110*Math.sin(2*g_seconds);
+        leftOffArm = leftArmAngleX;
+        ManElbowL = -50*Math.sin(1*g_seconds);
+        leftOffElbow = ManElbowL;
+        HeadAngleX = 15*Math.sin(2*g_seconds);
+        leftOffHead = HeadAngleX;
+        //TorsoAngleY = -20 - Math.abs(10*Math.sin(2*g_seconds));
+        //TorsoAngleZ = -Math.abs(5*Math.sin(2*g_seconds));
+        //TorsoAngleX = -5-Math.abs(30*Math.sin(2*g_seconds));
+      }
+
+      if(g_seconds > 1 && g_seconds < 1.25) {
+        HeadAngleX = leftOffHead - Math.abs(15*Math.sin(0.25 * g_seconds * Math.PI));
+
+      }
+
+      if(g_seconds > 0.7 && g_seconds < 4) {
+        HeadAngleX = 15*Math.sin(2*g_seconds);
+        HeadAngleY = 25*Math.sin(2 * g_seconds * Math.PI);
+        leftArmAngleX = leftOffArm - 5 + 15*Math.sin(2*g_seconds);
+        TorsoAngleX = -25*Math.sin(0.25*g_seconds);
+      }
+
+      if(g_seconds > 4 && g_seconds < 5) {
+        HeadAngleY = 25*Math.sin(2 * g_seconds * Math.PI);
+        leftOffArm = leftArmAngleX;
+      }
+
+      if(g_seconds >  5 && g_seconds < 5.5) {
+        leftArmAngleX = leftOffArm + 90*Math.sin(2*g_seconds);
+        ManElbowL = leftOffElbow - 50*Math.sin(2*g_seconds);
+        HeadAngleX = leftOffHead - Math.abs(15*Math.sin(0.25*g_seconds));
+      }
+
+
+      if(g_seconds > 6) {
+        leftArmAngleX = 0;
+        leftArmAngleY = 0;
+        leftArmAngleZ = 0;
+        leftLegAngleX = 0;
+        leftLegAngleY = 0;
+        leftLegAngleZ = 0;
+        RightArmAngleX = 0;
+        RightArmAngleY = 0;
+        RightArmAngleZ = 0;
+        RightLegAngleX = 0;
+        RightLegAngleY = 0;
+        RightLegAngleZ = 0;
+        HeadAngleX = 0;
+        HeadAngleY = 0;
+        HeadAngleZ = 0;
+        TorsoAngleX = 0;
+        TorsoAngleY = 0;
+        TorsoAngleZ = 0;
+        leftFootAngle = 0;
+        RightFootAngle = 0;
+        ManElbowL = 0;
+        ManElbowR = 0;
+        ManKneeL = 0;
+        ManKneeR = 0;
+        CharHeight = 0;
+        g_startTime = performance.now()/1000.0;
+        g_seconds = performance.now()/1000.0-g_startTime;
+      }
     }
   }
 }
@@ -570,7 +917,7 @@ function renderCharacter() {
   Torso_Lower.matrix.rotate(TorsoAngleX, 1, 0, 0);
   Torso_Lower.matrix.rotate(TorsoAngleY, 0, 1, 0);
   Torso_Lower.matrix.rotate(TorsoAngleZ, 0, 0, 1);
-  //Torso_Lower.matrix.translate(0.0, -1, 0.0);
+  Torso_Lower.matrix.translate(0.0, CharHeight, 0.0);
   var body_matrix = new Matrix4(Torso_Lower.matrix);
   //body.matrix.translate(-0.25, -0.75, 0.0);
   //body.matrix.rotate(-5, 1, 0, 0);
@@ -1070,6 +1417,7 @@ function renderCharacter() {
   leftLowerArm.matrix.rotate(-Math.abs(leftArmAngleX), 1, 0, 0);
   //leftLowerArm.matrix.rotate(leftArmAngleY, 0, 1, 0);
   leftLowerArm.matrix.rotate(0.2 * Math.abs(leftArmAngleZ), 0, 0, 1);
+  leftLowerArm.matrix.rotate(ManElbowL, 1, 0, 0);
   leftLowerArm.render();
 
   var BraceletL = new Cylinder([10, 10], 25, shading, 6);
@@ -1137,6 +1485,7 @@ function renderCharacter() {
   rightLowerArm.matrix.rotate(-Math.abs(RightArmAngleX), 1, 0, 0);
   //rightLowerArm.matrix.rotate(-RightArmAngleY, 0, 1, 0);
   rightLowerArm.matrix.rotate(-0.2 * Math.abs(RightArmAngleZ), 0, 0, 1);
+  rightLowerArm.matrix.rotate(ManElbowR, 1, 0, 0);
   rightLowerArm.render();
 
   var BraceletR = new Cylinder([10, 10], 25, shading, 6);
@@ -1177,6 +1526,7 @@ function renderCharacter() {
   leftUpperLeg.matrix.scale(0.7, 0.7, 0.7);
   leftUpperLeg.matrix.translate(0.12, 0.095, 0);
   leftUpperLeg.matrix.rotate(180, 0, 0, 1);
+  leftUpperLeg.matrix.translate(0, -0.8 * CharHeight, 0);
   leftUpperLeg.matrix.rotate(-leftLegAngleX, 1, 0, 0);
   leftUpperLeg.matrix.rotate(leftLegAngleY, 0, 1, 0);
   leftUpperLeg.matrix.rotate(leftLegAngleZ, 0, 0, 1);
@@ -1189,6 +1539,7 @@ function renderCharacter() {
   leftLowerLeg.matrix.translate(0, 115/200, 0);
   //leftLowerLeg.matrix.rotate(-90, 0, 0, 1);
   leftLowerLeg.matrix.rotate(Math.abs(leftLegAngleX * 1.2), 1, 0, 0);
+  leftLowerLeg.matrix.rotate(ManKneeL, 1, 0, 0);
   //leftLowerLeg.matrix.rotate(leftLegAngleY, 0, 1, 0);
   //leftLowerLeg.matrix.rotate(-leftLegAngleZ * 0.5, 0, 0, 1);
   leftLowerLeg.render();
@@ -1199,6 +1550,7 @@ function renderCharacter() {
   leftFoot.matrix = new Matrix4(leftLowerLeg_matrix);
   leftFoot.matrix.scale(1, 0.5, 1);
   leftFoot.matrix.translate(0, 1.1, 0.1);
+  leftFoot.matrix.rotate(leftFootAngle, 1, 0, 0);
   leftFoot.matrix.rotate(-90, 1, 0, 0);
   leftFoot.matrix.rotate(45, 0, 1, 0);
   leftFoot.render();
@@ -1220,6 +1572,7 @@ function renderCharacter() {
   rightUpperLeg.matrix.translate(-0.12, 0.095, 0);
   rightUpperLeg.matrix.rotate(180, 0, 0, 1);
   rightUpperLeg.matrix.rotate(180, 0, 1, 0);
+  rightUpperLeg.matrix.translate(0, -0.8 * CharHeight, 0);
   rightUpperLeg.matrix.rotate(RightLegAngleX, 1, 0, 0);
   rightUpperLeg.matrix.rotate(-RightLegAngleY, 0, 1, 0);
   rightUpperLeg.matrix.rotate(RightLegAngleZ, 0, 0, 1);
@@ -1232,6 +1585,7 @@ function renderCharacter() {
   rightLowerLeg.matrix.translate(0, 115/200, 0);
   //rightLowerLeg.matrix.rotate(-90, 0, 0, 1);
   rightLowerLeg.matrix.rotate(-Math.abs(RightLegAngleX * 1.2), 1, 0, 0);
+  rightLowerLeg.matrix.rotate(ManKneeR, 1, 0, 0);
   //rightLowerLeg.matrix.rotate(-RightLegAngleY, 0, 1, 0);
   //rightLowerLeg.matrix.rotate(-RightLegAngleZ * 0.5, 0, 0, 1);
   rightLowerLeg.render();
@@ -1241,6 +1595,7 @@ function renderCharacter() {
   rightFoot.matrix = new Matrix4(rightLowerLeg_matrix);
   rightFoot.matrix.scale(1, 0.5, 1);
   rightFoot.matrix.translate(0, 1.1, -0.1);
+  rightFoot.matrix.rotate(RightFootAngle, 1, 0, 0);
   rightFoot.matrix.rotate(90, 1, 0, 0);
   rightFoot.matrix.rotate(45, 0, 1, 0);
   rightFoot.render();
@@ -1256,6 +1611,8 @@ function renderCharacter() {
   robeLower.matrix.scale(1, 0.8, 0.65)
   robeLower.matrix.scale(0.7, 0.7, 0.7);
   robeLower.matrix.translate(0, 0.29, 0.0);
+  robeLower.matrix.translate(0, CharHeight, 0);
+
   //robeLower.matrix.translate(-0.6, 50/200, 0.0);
   robeLower.matrix.rotate(180, 0, 0, 1);
   //robeLower.matrix.rotate(20 *Math.sin(g_seconds), 1, 0, 0)
@@ -1273,7 +1630,7 @@ function renderCharacter() {
   robeTrim2.render();
   
   robeLower.matrix = new Matrix4(robelowersave1);
-  robeLower.matrix.rotate(-0.7 * leftLegAngleX, 1, 0, 0)
+  robeLower.matrix.rotate(-0.8 * leftLegAngleX, 1, 0, 0)
   robeLower.matrix.rotate(0.7 * leftLegAngleZ, 0, 0, 1)
   robeLower.render();
 
@@ -1282,7 +1639,7 @@ function renderCharacter() {
   robeTrim2.render();
 
   robeLower.matrix = new Matrix4(robelowersave2);
-  robeLower.matrix.rotate(-0.7 * RightLegAngleX, 1, 0, 0)
+  robeLower.matrix.rotate(-0.8 * RightLegAngleX, 1, 0, 0)
   robeLower.matrix.rotate(-0.7 * RightLegAngleZ, 0, 0, 1)
   robeLower.render();
 
@@ -1356,17 +1713,6 @@ function sendTextToHTML(text, htmlID) {
     htmlElm.innerHTML = text;
 }
 
-function convertCoordinatesEventToGL(ev) {
-    var x = ev.clientX; // x coordinate of a mouse pointer
-    var y = ev.clientY; // y coordinate of a mouse pointer
-    var rect = ev.target.getBoundingClientRect();
-  
-    x = ((x - rect.left) - canvas.width/2)/(canvas.width/2);
-    y = (canvas.height/2 - (y - rect.top))/(canvas.height/2);
-
-    return([x,y]);
-}
-
 function updateMousePosition (e) {
   g_globalAngle = e.pageX*0.5 + 180;
   g_globalAngle2 = e.pageY*0.5 + 180;
@@ -1426,7 +1772,7 @@ function addActionsFromHtmlUI() {
         canvas.addEventListener('mousemove', onMouseMove);
 
         document.addEventListener("click", (e) => {if (e.shiftKey) {
-          AnimationMode = (1 + AnimationMode) % 3;
+          AnimationMode = (1 + AnimationMode) % 9;
           console.log(AnimationMode);
           g_startTime = performance.now()/1000.0;
           leftArmAngleX = 0;
@@ -1447,5 +1793,12 @@ function addActionsFromHtmlUI() {
           TorsoAngleX = 0;
           TorsoAngleY = 0;
           TorsoAngleZ = 0;
+          leftFootAngle = 0;
+          RightFootAngle = 0;
+          ManElbowL = 0;
+          ManElbowR = 0;
+          ManKneeL = 0;
+          ManKneeR = 0;
+          CharHeight = 0;
         }})
 }
