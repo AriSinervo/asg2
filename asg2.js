@@ -1,3 +1,5 @@
+// Code by Ari Sinervo
+
 var VSHADER_SOURCE =`
   attribute vec4 a_Position;
   uniform mat4 u_ModelMatrix;
