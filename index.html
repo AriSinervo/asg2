@@ -15,10 +15,12 @@
     </head>
 
     <body onload="main()">
+        <b><u>A Pleasant Day At Lake Texcoco</u></b><p>
         <canvas id="webgl" width="400" height="400">
             Please use a browser that supports "canvas"
         </canvas>
         <p>Click and drag to move the camera around or shift click to change her animations!</p>
+        <p><b>Note:</b> If you are experiencing framerate issues toggle off details, randomized trees can also be turned on bellow for an even more detailed scenery!</p>
         <p>
         <p id="numdot"> 
         </p>
@@ -29,12 +31,13 @@
 
         Camera Position: <input type="range" min="0.3" max="5" value="1" step="0.01" class="slider" id="posSlide">
         <p><button type="button" id="reset">Reset Camera Position</button>
+            <button type="button" id="charTog"> Toggle Character</button>
+            <button type="button" id="toggle">Toggle Animation</button>
             <button type="button" id="PerspTog">Toggle Perspective</button>
             <button type="button" id="groundTog"> Toggle Background</button>
             <button type="button" id="flowTog"> Toggle Details</button>
-            <button type="button" id="charTog"> Toggle Character</button>
-            <button type="button" id="toggle">Toggle Animation</button>
-            <button type="button" id="shading">Toggle Shading</button></p>
+            
+            <button type="button" id="treesTog">Toggle Trees</button></p>
         
         <p>
         Right arm angle x: <input type="range" min="-90" max="90" value="0" class="slider" id="yellowSlide">
@@ -61,6 +64,7 @@
         Here is the reference I used for the model, it is a character I drew inspired by Aztec/Maya artwork. While I've always pictured this character in stark black and white monochrome robes, this would only look good in a detailed model so I decided to add different colors to the blocky version. Since the character's outfit was originally inspired by the Aztec rain god, Tlaloc, I drew inspiration from his palette when coloring my character. 
         <p>
         <img src="Mi_Ref.jpg" alt="Pumpkin Image" width="471" height="587">   
+        <img src="Mi_Ref2.jpg" alt="Pumpkin Image" width="377" height="587">
 
     </body>
 
